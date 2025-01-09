@@ -6,3 +6,7 @@ python-dotenv
 cryptography
 alembic
 pymysql
+
+
+python-jose
+passlib
