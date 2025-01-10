@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from core.database import SessionLocal
 from models.user import User
 
+
+# update to get current admin
+from api.auth import get_current_admin
+
 router = APIRouter()
 
 # Dependency to get DB session
@@ -39,7 +43,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.get("/users")
+@router.get("/users", dependencies=[Depends(get_current_admin)])
 def get_all_users(db: Session = Depends(get_db)):
     # Retrieve all users
     users = db.query(User).all()

@@ -5,8 +5,14 @@ pymysql
 python-dotenv
 cryptography
 alembic
-pymysql
+
 
 
 python-jose
 passlib
+
+#for test
+pytest
+pytest-asyncio
+httpx
+python-multipart
