@@ -12,6 +12,9 @@ import os
 from fastapi.security import OAuth2PasswordRequestForm
 from .auth_utils import create_access_token, verify_password
 
+# setup for login from vue js
+from pydantic import BaseModel
+
 # Load environment variables
 load_dotenv()
 
@@ -41,6 +44,12 @@ router = APIRouter()
 #     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 #     to_encode.update({"exp": expire})
 #     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+# class for vue login setup
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 def verify_access_token(token: str):
     credentials_exception = HTTPException(
@@ -81,10 +90,22 @@ def get_db():
 #     access_token = create_access_token(data={"sub": admin.username})
 #     return {"access_token": access_token, "token_type": "bearer"}
 
+# @router.post("/admin/login")
+# def admin_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+#     admin = db.query(Admin).filter(Admin.username == form_data.username).first()
+#     if not admin or not verify_password(form_data.password, admin.password_hash):
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid username or password",
+#         )
+#     access_token = create_access_token(data={"sub": admin.username})
+#     return {"access_token": access_token, "token_type": "bearer"}
+
+
 @router.post("/admin/login")
-def admin_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    admin = db.query(Admin).filter(Admin.username == form_data.username).first()
-    if not admin or not verify_password(form_data.password, admin.password_hash):
+def admin_login(request: LoginRequest, db: Session = Depends(get_db)):
+    admin = db.query(Admin).filter(Admin.username == request.username).first()
+    if not admin or not verify_password(request.password, admin.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
